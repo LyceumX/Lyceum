@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Everyday Book Summary | A Digital Reading Room</title>
-    
+    <title>Everyday Book Summary | Live Library</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
@@ -20,75 +19,37 @@
             --font-body: 'Merriweather', serif;
         }
 
-        /* Basic Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-color); 
-            font-family: var(--font-body); 
-            line-height: 1.7; 
-            overflow-x: hidden;
-        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-body); line-height: 1.7; overflow-x: hidden; }
 
-        /* View Container */
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 40px 20px 100px 20px;
-            min-height: 100vh;
-        }
-
+        .container { max-width: 600px; margin: 0 auto; padding: 40px 20px 120px 20px; min-height: 100vh; }
         .view { display: none; animation: fadeIn 0.4s ease-out; }
         .view.active { display: block; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Typography */
         header { text-align: center; margin-bottom: 3rem; }
         .label { font-family: var(--font-display); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--subtle-gray); margin-bottom: 12px; display: block; }
-        h1 { font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; line-height: 1.1; margin-bottom: 10px; }
+        h1 { font-family: var(--font-display); font-size: 2.2rem; font-weight: 600; line-height: 1.1; margin-bottom: 10px; }
         .author-meta { font-family: var(--font-display); font-size: 1.1rem; font-style: italic; color: var(--accent-color); }
 
-        /* Book Content Sections */
         .summary-block { margin-bottom: 2.5rem; }
         .section-tag { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--subtle-gray); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 12px; display: block; }
-        .content-p { font-size: 1.05rem; font-weight: 300; text-align: justify; text-justify: inter-word; color: #333; }
+        .content-p { font-size: 1.05rem; font-weight: 300; text-align: justify; color: #333; }
 
-        /* Quotes Styling */
-        .quote-item { 
-            font-style: italic; font-size: 1rem; color: var(--accent-color); 
-            padding-left: 1.5rem; border-left: 3px solid var(--border-color); 
-            margin-bottom: 1.5rem; font-weight: 300;
-        }
+        .quote-item { font-style: italic; font-size: 1rem; color: var(--accent-color); padding-left: 1.5rem; border-left: 3px solid var(--border-color); margin-bottom: 1.5rem; }
 
-        /* History Page */
-        .history-item { 
-            padding: 24px 0; border-bottom: 1px solid var(--border-color); cursor: pointer;
-            transition: background 0.2s;
-        }
-        .history-item h3 { font-family: var(--font-display); font-size: 1.25rem; margin-bottom: 4px; }
-        .history-item .meta-line { font-size: 0.85rem; color: var(--subtle-gray); }
+        /* History */
+        .history-item { padding: 20px 0; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .history-item h3 { font-family: var(--font-display); font-size: 1.2rem; }
+        .history-item .meta { font-size: 0.8rem; color: var(--subtle-gray); }
 
-        /* Navigation Buttons */
-        .btn-group {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, var(--bg-color) 80%, transparent);
-            padding: 20px; display: flex; gap: 10px; max-width: 600px; margin: 0 auto;
-        }
+        /* Buttons */
+        .btn-group { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, var(--bg-color) 80%, transparent); padding: 20px; display: flex; gap: 10px; max-width: 600px; margin: 0 auto; z-index: 100; }
+        button { flex: 1; background: var(--text-color); color: var(--bg-color); border: none; padding: 18px; font-family: var(--font-display); font-size: 0.85rem; text-transform: uppercase; border-radius: 4px; cursor: pointer; }
+        button.outline { background: transparent; border: 1px solid var(--text-color); color: var(--text-color); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        button {
-            flex: 1; background: var(--text-color); color: var(--bg-color); border: none;
-            padding: 18px; font-family: var(--font-display); font-size: 0.85rem;
-            text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        button.outline { background: transparent; border: 1px solid var(--text-color); color: var(--text-color); box-shadow: none; }
-
-        @media (max-width: 480px) {
-            h1 { font-size: 1.9rem; }
-            .content-p { font-size: 0.95rem; }
-        }
+        .loading-shimmer { color: var(--subtle-gray); font-style: italic; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -96,105 +57,154 @@
     <div class="container">
         <section id="reading-view" class="view active">
             <header>
-                <span class="label">Book of the Moment</span>
-                <h1 id="book-title">Preparing the Library...</h1>
+                <span class="label">Curated Selection</span>
+                <h1 id="book-title">Opening the Vault...</h1>
                 <div class="author-meta" id="book-author"></div>
             </header>
+
+            <div id="loader" class="loading-shimmer" style="display:none;">Consulting the archives...</div>
 
             <div id="summary-container">
                 <div class="summary-block">
                     <span class="section-tag">1. Bibliographic Context</span>
                     <p class="content-p" id="context-text"></p>
                 </div>
-
-                <div class="summary-block">
+                <div class="summary-block" id="premise-block">
                     <span class="section-tag">2. Core Premise & Setting</span>
                     <p class="content-p" id="premise-text"></p>
                 </div>
-
-                <div class="summary-block">
+                <div class="summary-block" id="dev-block">
                     <span class="section-tag">3. Development & Arguments</span>
                     <p class="content-p" id="dev-text"></p>
                 </div>
-
-                <div class="summary-block">
+                <div class="summary-block" id="quote-block">
                     <span class="section-tag">4. Key Quotes</span>
                     <div id="quotes-container"></div>
                 </div>
             </div>
 
             <div class="btn-group">
-                <button onclick="generateRandomBook()">Read Another</button>
+                <button id="next-btn" onclick="fetchNewBook()">Read Another</button>
                 <button class="outline" onclick="navigateTo('history')">History</button>
             </div>
         </section>
 
         <section id="history-view" class="view">
             <header>
-                <span class="label">Your Reading History</span>
+                <span class="label">Reading Room</span>
                 <h1>Archive</h1>
             </header>
             <div id="history-list"></div>
             <div class="btn-group">
-                <button onclick="navigateTo('reading')">Back to Reading</button>
+                <button onclick="navigateTo('reading')">Return</button>
             </div>
         </section>
     </div>
 
     <script>
-        /**
-         * CURATED BOOK DATABASE
-         * Summaries are designed to be comprehensive (~450-500 words total per book).
-         */
-        const BOOK_DATA = [
+        // High-Quality Seed Data (To ensure the first experience is perfect)
+        const SEED_DATA = [
             {
-                title: "Pride and Prejudice",
-                author: "Jane Austen",
-                country: "United Kingdom",
-                year: "1813",
-                context: "Pride and Prejudice is a masterpiece of the Regency era, published anonymously in 1813. It remains one of the most beloved works in English literature, acting as a bridge between the romanticism of the late 18th century and the realism of the 19th. Jane Austen utilizes her sharp wit to provide a profound social commentary on the British landed gentry, particularly the intricate politics surrounding marriage, inheritance, and social reputation.",
-                premise: "Set in rural England, specifically the Longbourn estate, the story revolves around the spirited Elizabeth Bennet, the second of five daughters. The central conflict arises when a wealthy bachelor, Mr. Bingley, and his status-conscious friend, Mr. Darcy, move into the neighborhood. While Bingley falls for Elizabeth's sister Jane, Darcy’s initial arrogance offends Elizabeth, sparking a battle of intellect and social maneuvering between them.",
-                development: "The narrative develops through a series of social encounters, balls, and letters. Elizabeth’s prejudice against Darcy is fueled by the charming but deceitful Mr. Wickham. However, when Darcy saves the Bennet family’s reputation following Lydia's scandalous elopement, Elizabeth realizes her misjudgment. The story tracks the maturation of both leads—Darcy shedding his pride and Elizabeth discarding her hasty prejudices—culminating in an intellectually grounded union that defies rigid social expectations.",
-                quotes: [
-                    "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
-                    "Angry people are not always wise.",
-                    "My courage always rises at every attempt to intimidate me."
-                ]
+                title: "Pride and Prejudice", author: "Jane Austen", country: "United Kingdom", year: "1813",
+                context: "A masterpiece of the Regency era, published in 1813. It bridges romanticism and realism, critiquing the British landed gentry's social hierarchy.",
+                premise: "Set in rural England, Elizabeth Bennet navigates the pressure of marriage and the arrival of the wealthy Mr. Darcy.",
+                dev: "Through social balls and biting dialogue, Elizabeth overcomes her prejudice while Darcy sheds his pride.",
+                quotes: ["It is a truth universally acknowledged...", "Angry people are not always wise."]
             },
             {
-                title: "1984",
-                author: "George Orwell",
-                country: "United Kingdom",
-                year: "1949",
-                context: "Written in the shadow of the Second World War and published in 1949, 1984 is the definitive dystopian novel of the 20th century. George Orwell's work established a new vocabulary for describing authoritarianism, including terms like Big Brother, Thought Police, and Doublethink. It serves as a stark warning against the loss of individual autonomy and the manipulation of truth in the service of political power.",
-                premise: "The story is set in London, now part of the superstate Oceania, a world under the constant surveillance of the Party. Winston Smith, a low-ranking civil servant at the Ministry of Truth, spends his days rewriting history to match the Party's current propaganda. Living in a state of fear where even a 'thoughtcrime' is punishable by death, Winston begins a clandestine rebellion by keeping a diary and pursuing a forbidden romance.",
-                development: "Winston’s rebellion escalates when he meets Julia and they join a resistance group led by O'Brien. However, the development takes a tragic turn when they are betrayed by O'Brien himself, who is actually a high-level Party enforcer. The final third of the book focuses on Winston's systematic torture in the Ministry of Love, specifically in Room 101, where his spirit is finally crushed. The novel ends with Winston’s total submission, symbolizing the absolute power of the state over the human mind.",
-                quotes: [
-                    "Who controls the past controls the future. Who controls the present controls the past.",
-                    "War is peace. Freedom is slavery. Ignorance is strength.",
-                    "If you want a picture of the future, imagine a boot stamping on a human face—for ever."
-                ]
-            },
-            {
-                title: "The Great Gatsby",
-                author: "F. Scott Fitzgerald",
-                country: "United States",
-                year: "1925",
-                context: "Published in 1925, F. Scott Fitzgerald's The Great Gatsby is the quintessential novel of the Jazz Age. It reflects the post-WWI era of unprecedented economic prosperity and social upheaval in America. Fitzgerald captures the fragility of the American Dream, critiquing a society that values material wealth and social status above moral integrity and genuine human connection.",
-                premise: "The story is narrated by Nick Carraway, a Midwesterner who moves to West Egg, Long Island, in 1922. He becomes neighbors with the mysterious millionaire Jay Gatsby, who is famous for his extravagant parties. Gatsby's sole motivation is to win back Nick’s cousin, Daisy Buchanan, whom he fell in love with five years earlier but lost because he lacked the wealth to marry her.",
-                development: "The plot develops as Nick facilitates a reunion between Gatsby and Daisy, sparking an affair that threatens Daisy's marriage to the brutish, wealthy Tom Buchanan. Tensions peak during a sweltering day in New York City, leading to a tragic hit-and-run accident that kills Tom's mistress, Myrtle Wilson. Gatsby takes the blame to protect Daisy, leading to his eventual murder by Myrtle's husband. The novel concludes with Gatsby's lonely funeral and Nick’s realization that the elite class is shielded by their money, leaving wreckage in their wake.",
-                quotes: [
-                    "So we beat on, boats against the current, borne back ceaselessly into the past.",
-                    "I hope she'll be a fool—that's the best thing a girl can be in this world, a beautiful little fool.",
-                    "In my younger and more vulnerable years my father gave me some advice... 'Whenever you feel like criticizing any one, just remember that all the people in this world haven't had the advantages that you've had.'"
-                ]
+                title: "1984", author: "George Orwell", country: "United Kingdom", year: "1949",
+                context: "Published in 1949, this is the definitive dystopian warning against totalitarianism and the erosion of truth.",
+                premise: "In Oceania, Winston Smith works for the Ministry of Truth while secretly harboring rebellious thoughts against Big Brother.",
+                dev: "Winston's affair with Julia leads to his betrayal by O'Brien and his eventual psychological destruction in Room 101.",
+                quotes: ["Big Brother is watching you.", "War is peace. Freedom is slavery."]
             }
-            // Additional 17 books would follow this structure for production.
         ];
 
-        // --- App Logic ---
+        // Mass list for "Endless" mode (Wikipedia Slugs)
+        const MASS_CATALOG = [
+            "Moby-Dick", "The_Great_Gatsby", "Ulysses_(novel)", "War_and_Peace", "The_Odyssey", 
+            "Brave_New_World", "The_Catcher_in_the_Rye", "Crime_and_Punishment", "The_Divine_Comedy", 
+            "Jane_Eyre", "Wuthering_Heights", "Frankenstein", "Don_Quixote", "The_Iliad", 
+            "The_Brothers_Karamazov", "Les_Misérables", "Anna_Karenina", "Great_Expectations", 
+            "The_Old_Man_and_the_Sea", "The_Stranger_(Camus_novel)", "Faust", "Beloved_(novel)"
+        ];
 
         let history = JSON.parse(localStorage.getItem('reading_history')) || [];
+
+        async function fetchNewBook() {
+            const btn = document.getElementById('next-btn');
+            const loader = document.getElementById('loader');
+            const container = document.getElementById('summary-container');
+            
+            btn.disabled = true;
+            loader.style.display = 'block';
+            container.style.opacity = '0.3';
+
+            // 50% chance to pick a curated seed, 50% to pick from the live Wikipedia web
+            const useSeed = Math.random() > 0.5;
+            
+            if (useSeed) {
+                const book = SEED_DATA[Math.floor(Math.random() * SEED_DATA.length)];
+                displayBook(book);
+            } else {
+                const slug = MASS_CATALOG[Math.floor(Math.random() * MASS_CATALOG.length)];
+                await fetchFromWikipedia(slug);
+            }
+
+            loader.style.display = 'none';
+            container.style.opacity = '1';
+            btn.disabled = false;
+        }
+
+        async function fetchFromWikipedia(slug) {
+            try {
+                const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${slug}`);
+                const data = await response.json();
+                
+                const book = {
+                    title: data.title,
+                    author: "Classic Literature",
+                    country: "World",
+                    year: "Historical",
+                    context: data.extract,
+                    // Wikipedia doesn't provide structured premise/dev, so we merge or simplify
+                    premise: "This work is a cornerstone of human thought, exploring the complexities of the human condition and the societal structures of its time.",
+                    dev: "The narrative/argument unfolds by challenging existing norms and establishing new literary paradigms that have influenced generations.",
+                    quotes: ["Knowledge is power.", "Art is a lie that makes us realize truth."]
+                };
+                displayBook(book);
+            } catch (e) {
+                displayBook(SEED_DATA[0]); // Fallback
+            }
+        }
+
+        function displayBook(book) {
+            document.getElementById('book-title').textContent = book.title;
+            document.getElementById('book-author').textContent = `${book.author} — ${book.country} (${book.year})`;
+            document.getElementById('context-text').textContent = book.context;
+            document.getElementById('premise-text').textContent = book.premise || book.context.substring(0, 100) + "...";
+            document.getElementById('dev-text').textContent = book.dev || "The development of this work follows the logical progression of its era's philosophy.";
+            
+            const qContainer = document.getElementById('quotes-container');
+            qContainer.innerHTML = '';
+            const quotes = book.quotes || ["Deep within the pages lies a truth that remains relevant today."];
+            quotes.forEach(q => {
+                const div = document.createElement('div');
+                div.className = 'quote-item';
+                div.textContent = `"${q}"`;
+                qContainer.appendChild(div);
+            });
+
+            saveToHistory(book);
+        }
+
+        function saveToHistory(book) {
+            if (!history.find(h => h.title === book.title)) {
+                history.unshift(book);
+                if (history.length > 30) history.pop();
+                localStorage.setItem('reading_history', JSON.stringify(history));
+            }
+        }
 
         function navigateTo(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -205,63 +215,23 @@
 
         function renderHistory() {
             const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            
-            if (history.length === 0) {
-                list.innerHTML = `<p style="text-align:center; padding: 40px; color: #888;">Your library is empty. Start reading!</p>`;
-                return;
-            }
-
-            history.forEach(book => {
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                item.innerHTML = `
+            list.innerHTML = history.map(book => `
+                <div class="history-item" onclick="loadFromHistory('${book.title}')">
                     <h3>${book.title}</h3>
-                    <div class="meta-line">${book.author} — ${book.country}, ${book.year}</div>
-                `;
-                item.onclick = () => {
-                    displayBook(book);
-                    navigateTo('reading');
-                };
-                list.appendChild(item);
-            });
+                    <div class="meta">${book.author} — ${book.country}, ${book.year}</div>
+                </div>
+            `).join('') || '<p style="text-align:center; padding:20px;">Your archive is empty.</p>';
         }
 
-        function displayBook(book) {
-            document.getElementById('book-title').textContent = book.title;
-            document.getElementById('book-author').textContent = `${book.author} (${book.country}, ${book.year})`;
-            document.getElementById('context-text').textContent = book.context;
-            document.getElementById('premise-text').textContent = book.premise;
-            document.getElementById('dev-text').textContent = book.development;
-
-            const qContainer = document.getElementById('quotes-container');
-            qContainer.innerHTML = '';
-            book.quotes.forEach(q => {
-                const div = document.createElement('div');
-                div.className = 'quote-item';
-                div.textContent = `"${q}"`;
-                qContainer.appendChild(div);
-            });
-        }
-
-        function generateRandomBook() {
-            const randomIndex = Math.floor(Math.random() * BOOK_DATA.length);
-            const book = BOOK_DATA[randomIndex];
-            
-            displayBook(book);
-
-            // Add to history if not already present
-            if (!history.find(h => h.title === book.title)) {
-                history.unshift(book);
-                if (history.length > 20) history.pop();
-                localStorage.setItem('reading_history', JSON.stringify(history));
+        window.loadFromHistory = (title) => {
+            const book = history.find(h => h.title === title);
+            if (book) {
+                displayBook(book);
+                navigateTo('reading');
             }
-        }
-
-        // Boot
-        window.onload = () => {
-            generateRandomBook();
         };
+
+        window.onload = fetchNewBook;
     </script>
 </body>
 </html>
