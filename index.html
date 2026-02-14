@@ -32,7 +32,7 @@
         }
 
         .container { 
-            max-width: 600px; 
+            max-width: 760px; 
             margin: 0 auto; 
             padding: 80px 30px calc(140px + env(safe-area-inset-bottom)) 30px; 
             min-height: 100vh; 
@@ -73,6 +73,31 @@
             opacity: 0.7;
         }
 
+        .language-meta {
+            font-family: var(--font-ui);
+            font-size: 0.62rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--subtle-gray);
+            margin-top: 12px;
+        }
+
+        .cover-wrap {
+            display: none;
+            margin-top: 28px;
+            border: 1px solid var(--border-color);
+            background: #fafafa;
+            overflow: hidden;
+            max-width: 320px;
+        }
+
+        .cover-wrap img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
         .summary-section { margin-bottom: 4rem; }
         
         .section-title { 
@@ -93,6 +118,31 @@
             font-weight: 300; 
             color: #222; 
             white-space: pre-line; 
+        }
+
+        .meta-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .meta-links a {
+            color: var(--text-color);
+            font-family: var(--font-body);
+            font-size: 1.05rem;
+            text-decoration: none;
+            border-bottom: 1px solid #efefef;
+            padding-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .book-text-link {
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--text-color);
+            padding-bottom: 4px;
         }
 
         .quote-block { 
@@ -158,6 +208,85 @@
             font-style: italic; 
             display: none; 
         }
+
+        @media (max-width: 767px) {
+            .container {
+                max-width: 600px;
+                padding: 80px 24px calc(140px + env(safe-area-inset-bottom)) 24px;
+            }
+
+            .btn-group {
+                max-width: 600px;
+                padding: 24px 24px calc(34px + env(safe-area-inset-bottom)) 24px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .author-meta {
+                font-size: 1.35rem;
+            }
+
+            .cover-wrap {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 1100px;
+                padding: 64px 56px 56px 56px;
+            }
+
+            #reading-view.active {
+                display: grid;
+                grid-template-columns: minmax(280px, 0.9fr) minmax(420px, 1.4fr);
+                gap: 56px;
+                align-items: start;
+            }
+
+            #reading-view header {
+                position: sticky;
+                top: 40px;
+                margin-bottom: 0;
+            }
+
+            .cover-wrap {
+                display: block;
+            }
+
+            #summary-content {
+                min-height: 60vh;
+            }
+
+            .btn-group {
+                position: static;
+                background: transparent;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                padding: 0;
+                margin-top: 36px;
+                max-width: none;
+            }
+
+            #history-view.active {
+                display: grid;
+                grid-template-columns: minmax(260px, 0.8fr) minmax(420px, 1.2fr);
+                gap: 56px;
+                align-items: start;
+            }
+
+            #history-view header {
+                position: sticky;
+                top: 40px;
+                margin-bottom: 0;
+            }
+
+            #history-list div {
+                padding: 24px 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -168,6 +297,10 @@
                 <span class="label">The Lyceum Collection</span>
                 <h1 id="book-title">Searching...</h1>
                 <div class="author-meta" id="book-author"></div>
+                <div class="language-meta" id="book-language"></div>
+                <div class="cover-wrap" id="book-cover-wrap">
+                    <img id="book-cover" alt="Book cover" loading="lazy">
+                </div>
             </header>
 
             <div id="loader">Consulting the text...</div>
@@ -192,20 +325,86 @@
     </div>
 
     <script>
-        /* [FUNCTIONS UNCHANGED AS REQUESTED] */
-        const CATALOG = [
-            {t: "The Count of Monte Cristo", a: "Alexandre Dumas"},
-            {t: "The Great Gatsby", a: "F. Scott Fitzgerald"},
-            {t: "1984", a: "George Orwell"},
-            {t: "Meditations", a: "Marcus Aurelius"},
-            {t: "The Picture of Dorian Gray", a: "Oscar Wilde"},
-            {t: "Crime and Punishment", a: "Fyodor Dostoevsky"},
-            {t: "Moby-Dick", a: "Herman Melville"},
-            {t: "The Art of War", a: "Sun Tzu"},
-            {t: "Pride and Prejudice", a: "Jane Austen"}
-        ];
+        const GENERAL_POOL_TARGET = 500;
+        const ADDITIONAL_BOOKSHELF_LABEL = 'Best Books Ever Listings';
+        const SOURCES = {
+            general: { nextUrl: 'https://gutendex.com/books/?languages=en' },
+            bookshelf704: { nextUrl: 'https://gutendex.com/books/?bookshelf=704' }
+        };
 
-        let history = JSON.parse(localStorage.getItem('reading_history_v3')) || [];
+        let history = JSON.parse(localStorage.getItem('reading_history_v4')) || [];
+        let bookPool = [];
+        let seenPoolIds = new Set();
+
+        function normalizeTitle(title = '') {
+            return title.toLowerCase().trim();
+        }
+
+        function getArchivedSets() {
+            const archivedIds = new Set();
+            const archivedTitles = new Set();
+            history.forEach(item => {
+                if (typeof item.id === 'number') archivedIds.add(item.id);
+                if (item.title) archivedTitles.add(normalizeTitle(item.title));
+            });
+            return { archivedIds, archivedTitles };
+        }
+
+        function getAvailablePool() {
+            const { archivedIds, archivedTitles } = getArchivedSets();
+            return bookPool.filter(book => {
+                const titleNorm = normalizeTitle(book.title || '');
+                return !archivedIds.has(book.id) && !archivedTitles.has(titleNorm);
+            });
+        }
+
+        async function fetchPoolPage(sourceKey) {
+            const source = SOURCES[sourceKey];
+            if (!source || !source.nextUrl) return false;
+            if (sourceKey === 'general' && bookPool.length >= GENERAL_POOL_TARGET) return false;
+
+            const response = await fetch(source.nextUrl);
+            const data = await response.json();
+            source.nextUrl = data.next || null;
+
+            const rankedBookshelfBooks = (data.results || [])
+                .filter(book => {
+                    const shelves = book.bookshelves || [];
+                    if (!shelves.length) return false;
+                    if (sourceKey === 'bookshelf704') {
+                        return shelves.includes(ADDITIONAL_BOOKSHELF_LABEL);
+                    }
+                    return true;
+                })
+                .sort((a, b) => (b.download_count || 0) - (a.download_count || 0));
+
+            rankedBookshelfBooks.forEach(book => {
+                if (sourceKey === 'general' && bookPool.length >= GENERAL_POOL_TARGET) return;
+                if (!seenPoolIds.has(book.id)) {
+                    seenPoolIds.add(book.id);
+                    bookPool.push(book);
+                }
+            });
+
+            return true;
+        }
+
+        async function ensurePoolHasAvailableBook() {
+            let guard = 0;
+            while (getAvailablePool().length === 0 && guard < 80) {
+                const activeSources = Object.entries(SOURCES)
+                    .filter(([, source]) => !!source.nextUrl)
+                    .map(([key]) => key);
+
+                if (!activeSources.length) break;
+
+                const sourceKey = activeSources[guard % activeSources.length];
+                const fetched = await fetchPoolPage(sourceKey);
+                if (!fetched && activeSources.length === 1) break;
+
+                guard += 1;
+            }
+        }
 
         async function fetchNewBook() {
             const btn = document.getElementById('next-btn');
@@ -214,18 +413,21 @@
             btn.disabled = true;
             loader.style.display = 'block';
             content.style.opacity = '0';
-            const selection = CATALOG[Math.floor(Math.random() * CATALOG.length)];
-            document.getElementById('book-title').innerText = selection.t;
-            document.getElementById('book-author').innerText = selection.a;
+            document.getElementById('book-title').innerText = 'Selecting from Gutenberg...';
+            document.getElementById('book-author').innerText = 'Bookshelf collection';
+            document.getElementById('book-language').innerText = '';
+            document.getElementById('book-cover-wrap').style.display = 'none';
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3500); 
-                const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(selection.t.replace(/ /g, '_'))}`;
-                const response = await fetch(wikiUrl, { signal: controller.signal });
-                const data = await response.json();
-                renderStructure(selection, data.extract || "A foundational work of literature.");
+                await ensurePoolHasAvailableBook();
+                const availableBooks = getAvailablePool();
+                const book = availableBooks[Math.floor(Math.random() * availableBooks.length)];
+                if (!book) {
+                    renderUnavailableState();
+                } else {
+                    renderStructure(book);
+                }
             } catch (e) {
-                renderStructure(selection, "This masterpiece remains a cornerstone of world culture.");
+                renderUnavailableState();
             } finally {
                 loader.style.display = 'none';
                 content.style.opacity = '1';
@@ -233,46 +435,93 @@
             }
         }
 
-        function renderStructure(selection, intro) {
+        function renderUnavailableState() {
+            document.getElementById('book-title').innerText = 'No New Books Available';
+            document.getElementById('book-author').innerText = 'Archive already contains all loaded bookshelf picks.';
+            document.getElementById('book-language').innerText = '';
+            document.getElementById('book-cover-wrap').style.display = 'none';
+            document.getElementById('summary-content').innerHTML = `
+                <div class="summary-section">
+                    <span class="section-title">Status</span>
+                    <p class="content-p">No unread books are currently available from the loaded pools (including Bookshelf 704). Click Next Selection to continue loading more pages, or clear older Archive entries.</p>
+                </div>
+            `;
+        }
+
+        function getBookTextUrl(formats = {}) {
+            return (
+                formats['text/plain; charset=utf-8'] ||
+                formats['text/plain; charset=us-ascii'] ||
+                formats['text/plain'] ||
+                formats['text/html'] ||
+                ''
+            );
+        }
+
+        function renderStructure(book) {
             const target = document.getElementById('summary-content');
+            const title = book.title || 'Untitled';
+            const authors = (book.authors || []).map(author => author.name).join(', ') || 'Unknown';
+            const summary = (book.summaries && book.summaries.length > 0) ? book.summaries[0] : '';
+            const subjects = book.subjects || [];
+            const bookshelves = book.bookshelves || [];
+            const language = (book.languages || []).join(', ');
+            const coverUrl = book.formats?.['image/jpeg'] || '';
+            const bookTextUrl = getBookTextUrl(book.formats || {});
+
+            document.getElementById('book-title').innerText = title;
+            document.getElementById('book-author').innerText = authors;
+            document.getElementById('book-language').innerText = language ? `Language: ${language}` : '';
+
+            const coverWrap = document.getElementById('book-cover-wrap');
+            const cover = document.getElementById('book-cover');
+            if (coverUrl) {
+                cover.src = coverUrl;
+                cover.alt = `${title} cover`;
+                coverWrap.style.display = '';
+            } else {
+                cover.removeAttribute('src');
+                coverWrap.style.display = 'none';
+            }
+
             const html = `
                 <div class="summary-section">
-                    <span class="section-title">01 Introduction</span>
-                    <p class="content-p">${intro}</p>
+                    <span class="section-title">Summary</span>
+                    <p class="content-p">${summary || 'No summary text available on Project Gutenberg for this edition.'}</p>
                 </div>
                 <div class="summary-section">
-                    <span class="section-title">02 Narrative Arc</span>
-                    <p class="content-p">• <strong>Opening:</strong> The world and characters are introduced within their historical context.
-                    • <strong>Rising Conflict:</strong> Key tensions escalate as the protagonist's desires clash with reality.
-                    • <strong>Climax:</strong> A pivotal moment of choice where the themes of the book converge.
-                    • <strong>Resolution:</strong> The aftermath of the conflict and the lasting impact on the world.</p>
+                    <span class="section-title">Subjects</span>
+                    <p class="content-p">${subjects.length ? subjects.join('\n') : 'No subjects listed.'}</p>
                 </div>
                 <div class="summary-section">
-                    <span class="section-title">03 Character Dynamics</span>
-                    <p class="content-p">• <strong>The Protagonist:</strong> An exploration of internal growth and personal struggle.
-                    • <strong>The Foil:</strong> Characters that reflect or challenge the main character's journey.
-                    • <strong>The Mentor:</strong> Figures of wisdom or influence that shape the narrative path.</p>
+                    <span class="section-title">Bookshelves</span>
+                    <p class="content-p">${bookshelves.length ? bookshelves.join('\n') : 'No bookshelf tags listed.'}</p>
                 </div>
                 <div class="summary-section">
-                    <span class="section-title">04 Thematic Framework</span>
-                    <p class="content-p">• <strong>Core Themes:</strong> Discussion of power, morality, and the human heart.
-                    • <strong>Symbolism:</strong> Objects or motifs that represent deeper philosophical truths.</p>
-                </div>
-                <div class="summary-section">
-                    <span class="section-title">05 Quotes</span>
-                    <div class="quote-block">"The world is a book, and those who do not travel read only a page."</div>
-                    <div class="quote-block">"Truth is rarely pure and never simple."</div>
+                    <span class="section-title">Book Text</span>
+                    <div class="meta-links">
+                        ${bookTextUrl
+                            ? `<a class="book-text-link" href="${bookTextUrl}" target="_blank" rel="noopener noreferrer">Read text from Project Gutenberg</a>`
+                            : '<p class="content-p">No direct text link listed.</p>'}
+                    </div>
                 </div>
             `;
             target.innerHTML = html;
-            saveToHistory({title: selection.t, author: selection.a, html: html});
+            saveToHistory({
+                id: book.id,
+                title: title,
+                author: authors,
+                language: language,
+                cover: coverUrl,
+                html: html
+            });
         }
 
         function saveToHistory(book) {
-            if (!history.find(h => h.title === book.title)) {
+            if (!history.find(h => (typeof h.id === 'number' && h.id === book.id) || h.title === book.title)) {
                 history.unshift(book);
                 if (history.length > 20) history.pop();
-                localStorage.setItem('reading_history_v3', JSON.stringify(history));
+                localStorage.setItem('reading_history_v4', JSON.stringify(history));
             }
         }
 
@@ -286,18 +535,29 @@
         function renderHistory() {
             const list = document.getElementById('history-list');
             list.innerHTML = history.map(book => `
-                <div onclick="loadFromHistory('${book.title.replace(/'/g, "\\'")}')">
+                <div onclick="loadFromHistory('${String(book.id ?? book.title).replace(/'/g, "\\'")}')">
                     <h3>${book.title}</h3>
                     <div style="font-family: var(--font-ui); font-size: 0.6rem; letter-spacing: 2px; color: var(--subtle-gray); text-transform: uppercase; margin-top: 10px;">${book.author}</div>
                 </div>
             `).join('') || '<p style="text-align:center; padding:20px;">Empty.</p>';
         }
 
-        window.loadFromHistory = (title) => {
-            const book = history.find(h => h.title === title);
+        window.loadFromHistory = (key) => {
+            const book = history.find(h => String(h.id ?? h.title) === String(key));
             if (book) {
                 document.getElementById('book-title').innerText = book.title;
                 document.getElementById('book-author').innerText = book.author;
+                document.getElementById('book-language').innerText = book.language ? `Language: ${book.language}` : '';
+                const coverWrap = document.getElementById('book-cover-wrap');
+                const cover = document.getElementById('book-cover');
+                if (book.cover) {
+                    cover.src = book.cover;
+                    cover.alt = `${book.title} cover`;
+                    coverWrap.style.display = '';
+                } else {
+                    cover.removeAttribute('src');
+                    coverWrap.style.display = 'none';
+                }
                 document.getElementById('summary-content').innerHTML = book.html;
                 navigateTo('reading');
             }
