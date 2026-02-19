@@ -33,18 +33,20 @@ async function handleRequest(req: Request, path: string[]) {
   });
 }
 
-export async function GET(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
+type Params = { params: Promise<{ path?: string[] }> };
+
+export async function GET(req: Request, { params }: Params) {
   return handleRequest(req, (await params).path ?? []);
 }
-export async function POST(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
+export async function POST(req: Request, { params }: Params) {
   return handleRequest(req, (await params).path ?? []);
 }
-export async function PUT(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PUT(req: Request, { params }: Params) {
   return handleRequest(req, (await params).path ?? []);
 }
-export async function DELETE(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(req: Request, { params }: Params) {
   return handleRequest(req, (await params).path ?? []);
 }
-export async function PATCH(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PATCH(req: Request, { params }: Params) {
   return handleRequest(req, (await params).path ?? []);
 }
