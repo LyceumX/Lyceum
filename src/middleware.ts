@@ -15,7 +15,11 @@ export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
     await auth.protect();
   }
-}, { secretKey: process.env.CLERK_SECRET_KEY_TEST || process.env.CLERK_SECRET_KEY_LIVE || process.env.CLERK_SECRET_KEY });
+}, { 
+  secretKey: process.env.CLERK_SECRET_KEY_TEST || process.env.CLERK_SECRET_KEY_LIVE || process.env.CLERK_SECRET_KEY,
+  signInUrl: '/sign-in',
+  signUpUrl: '/sign-up',
+});
 
 export const config = {
   matcher: [
