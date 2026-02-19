@@ -18,6 +18,8 @@ const ebGaramond = EB_Garamond({
   display: 'swap',
 })
 
+const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN || 'lyceumx.vercel.app'
+
 export default function RootLayout({
   children,
 }: {
@@ -26,6 +28,8 @@ export default function RootLayout({
   return (
     <ClerkProvider
       proxyUrl="/api/clerk"
+      domain={appDomain}
+      isSatellite
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       afterSignOutUrl="/sign-in"

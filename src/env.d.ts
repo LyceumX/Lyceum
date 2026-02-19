@@ -11,5 +11,6 @@ declare namespace NodeJS {
     CLERK_SECRET_KEY_TEST?: string;
     CLERK_FRONTEND_API_URL?: string;
     NEXT_PUBLIC_CLERK_PROXY_URL?: string;
+    NEXT_PUBLIC_APP_DOMAIN?: string;
   }
 }

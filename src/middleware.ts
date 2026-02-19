@@ -22,6 +22,8 @@ export default clerkMiddleware(async (auth, request) => {
   }
 }, { 
   secretKey: process.env.CLERK_SECRET_KEY_TEST || process.env.CLERK_SECRET_KEY_LIVE || process.env.CLERK_SECRET_KEY,
+  domain: process.env.NEXT_PUBLIC_APP_DOMAIN || 'lyceumx.vercel.app',
+  isSatellite: true,
   signInUrl: '/sign-in',
   signUpUrl: '/sign-up',
 });
