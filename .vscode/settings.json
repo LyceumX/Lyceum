@@ -5,6 +5,7 @@
         "mv": true,
         "git add": true,
         "dashboard": true,
-        "/book-summary/page.tsx": true
+        "/book-summary/page.tsx": true,
+        "base64": true
     }
 }
