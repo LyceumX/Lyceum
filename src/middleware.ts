@@ -7,9 +7,14 @@ const isPublicRoute = createRouteMatcher([
   "/api/clerk(.*)",
 ]);
 
+const resolvedPublishableKey =
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_TEST ||
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_LIVE ||
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 export default clerkMiddleware(async (auth, request) => {
   // Fail open if Clerk keys are missing (prevents full 404 on misconfigured deployments)
-  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  if (!resolvedPublishableKey) {
     return NextResponse.next();
   }
   if (!isPublicRoute(request)) {

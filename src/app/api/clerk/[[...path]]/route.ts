@@ -11,7 +11,7 @@ function getFrontendApiCandidates() {
     ? [testFallback, liveFallback]
     : [liveFallback, testFallback];
 
-  return [explicit, ...fallbacks].filter(
+  return [...fallbacks, explicit].filter(
     (value, index, array): value is string =>
       Boolean(value) && array.indexOf(value) === index,
   );
@@ -29,6 +29,8 @@ async function handleRequest(req: Request, path: string[]) {
   const headers = new Headers(req.headers);
   // Remove headers that shouldn't be forwarded
   headers.delete("connection");
+  headers.delete("host");
+  headers.delete("content-length");
 
   const body =
     req.method !== "GET" && req.method !== "HEAD"
@@ -43,6 +45,7 @@ async function handleRequest(req: Request, path: string[]) {
         method: req.method,
         headers,
         body,
+        redirect: "manual",
       });
 
       const resHeaders = new Headers(response.headers);
