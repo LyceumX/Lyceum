@@ -2,7 +2,8 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Library, LayoutDashboard, Settings } from 'lucide-react';
+import Image from 'next/image';
+import { BookOpen, LayoutDashboard, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const routes = [
@@ -10,53 +11,71 @@ const routes = [
     label: 'Dashboard',
     icon: LayoutDashboard,
     href: '/',
-    color: 'text-sky-500',
   },
   {
     label: 'Book Summary',
     icon: BookOpen,
     href: '/book-summary',
-    color: 'text-violet-500',
   },
-  // Future apps can be added here
 ];
 
 export const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
-      <div className="px-3 py-2 flex-1">
-        <Link href="/" className="flex items-center pl-3 mb-14">
-          <div className="relative w-8 h-8 mr-4">
-             {/* Logo placeholder */}
-             <Library className="w-8 h-8 text-white"/>
-          </div>
-          <h1 className="text-2xl font-bold">Lyceum</h1>
+    <div className="flex flex-col h-full bg-[#12100E] text-white">
+      {/* Logo area */}
+      <div className="flex flex-col items-center pt-8 pb-6 px-4 border-b border-white/10">
+        <Link href="/" className="flex flex-col items-center gap-3 group">
+          <Image
+            src="/Lyceum_White_PNG.png"
+            alt="Lyceum"
+            width={80}
+            height={80}
+            className="opacity-90 group-hover:opacity-100 transition-opacity"
+          />
         </Link>
-        <div className="space-y-1">
-          {routes.map((route) => (
+      </div>
+
+      {/* Ornamental divider label */}
+      <div className="px-5 pt-6 pb-2">
+        <span className="section-label text-[#A67C52]/70 tracking-[0.2em] text-[0.6rem]">
+          Navigation
+        </span>
+      </div>
+
+      {/* Nav routes */}
+      <nav className="flex-1 px-3 space-y-0.5">
+        {routes.map((route) => {
+          const active = pathname === route.href;
+          return (
             <Link
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                pathname === route.href ? "text-white bg-white/10" : "text-zinc-400",
+                'flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium tracking-wide transition-all duration-150',
+                active
+                  ? 'bg-[#A67C52]/20 text-[#C9A96E] border-l-2 border-[#A67C52]'
+                  : 'text-stone-400 hover:text-white hover:bg-white/5 border-l-2 border-transparent',
               )}
             >
-              <div className="flex items-center flex-1">
-                <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
-                {route.label}
-              </div>
+              <route.icon className={cn('h-4 w-4 shrink-0', active ? 'text-[#C9A96E]' : 'text-stone-500')} />
+              {route.label}
             </Link>
-          ))}
+          );
+        })}
+      </nav>
+
+      {/* Bottom ornament + settings */}
+      <div className="px-3 pb-6 border-t border-white/10 pt-4">
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-stone-500 hover:text-white hover:bg-white/5 cursor-pointer transition-all border-l-2 border-transparent">
+          <Settings className="h-4 w-4 shrink-0" />
+          Settings
         </div>
-      </div>
-      <div className="px-3 py-2">
-         <div className="flex items-center p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition text-zinc-400">
-             <Settings className="h-5 w-5 mr-3" />
-             Settings
-         </div>
+        {/* Column ornament at very bottom */}
+        <div className="mt-4 flex justify-center opacity-20">
+          <div className="w-16 h-px bg-[#A67C52]" />
+        </div>
       </div>
     </div>
   );

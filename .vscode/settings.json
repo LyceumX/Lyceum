@@ -3,6 +3,8 @@
         "git commit": true,
         "git push": true,
         "mv": true,
-        "git add": true
+        "git add": true,
+        "dashboard": true,
+        "/book-summary/page.tsx": true
     }
 }
