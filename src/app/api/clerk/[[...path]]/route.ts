@@ -31,6 +31,7 @@ async function handleRequest(req: Request, path: string[]) {
   }
 
   const url = new URL(req.url);
+  const requestPath = path.join("/");
   const headers = new Headers(req.headers);
   // Remove headers that shouldn't be forwarded
   headers.delete("connection");
@@ -45,8 +46,16 @@ async function handleRequest(req: Request, path: string[]) {
   let lastError: unknown;
   for (const frontendApi of candidates) {
     try {
-      const target = `${frontendApi}/${path.join("/")}${url.search}`;
-      const response = await fetch(target, {
+      const targetUrl = new URL(`${frontendApi}/${requestPath}${url.search}`);
+
+      if (requestPath === "v1/client/handshake") {
+        const redirectUrl = targetUrl.searchParams.get("redirect_url");
+        if (redirectUrl) {
+          targetUrl.searchParams.set("redirect_url", `${frontendApi}/`);
+        }
+      }
+
+      const response = await fetch(targetUrl, {
         method: req.method,
         headers,
         body,
