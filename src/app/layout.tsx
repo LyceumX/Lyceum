@@ -29,6 +29,7 @@ export default function RootLayout({
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       afterSignOutUrl="/sign-in"
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_LIVE || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     >
       <html lang="en" className={`${cormorant.variable} ${ebGaramond.variable}`}>
         <body className="bg-[#FAF9F6] text-[#1C1917] font-serif min-h-screen antialiased">
