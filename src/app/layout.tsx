@@ -25,6 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider
+      proxyUrl="/api/clerk"
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       afterSignOutUrl="/sign-in"
