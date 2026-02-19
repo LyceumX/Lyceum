@@ -16,7 +16,7 @@ export default function DashboardLayout({
 
       <main className="md:pl-72">
         <div className="flex justify-end pr-4 py-4 w-full h-[60px]">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
         {children}
       </main>
