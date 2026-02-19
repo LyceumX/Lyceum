@@ -5,9 +5,14 @@ function getFrontendApiCandidates() {
   const explicit = process.env.CLERK_FRONTEND_API_URL?.trim();
   const testFallback = "https://up-hawk-3.clerk.accounts.dev";
   const liveFallback = "https://enjoyed-gull-16.clerk.accounts.dev";
+  const resolvedPublishableKey =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_TEST ||
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_LIVE ||
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const isTestMode = resolvedPublishableKey?.startsWith("pk_test_");
 
   // Prioritize test fallback if test key is present
-  const fallbacks = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_TEST
+  const fallbacks = isTestMode
     ? [testFallback, liveFallback]
     : [liveFallback, testFallback];
 
