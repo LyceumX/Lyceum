@@ -48,13 +48,6 @@ async function handleRequest(req: Request, path: string[]) {
     try {
       const targetUrl = new URL(`${frontendApi}/${requestPath}${url.search}`);
 
-      if (requestPath === "v1/client/handshake") {
-        const redirectUrl = targetUrl.searchParams.get("redirect_url");
-        if (redirectUrl) {
-          targetUrl.searchParams.set("redirect_url", `${frontendApi}/`);
-        }
-      }
-
       const response = await fetch(targetUrl, {
         method: req.method,
         headers,
