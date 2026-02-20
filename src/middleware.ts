@@ -13,6 +13,13 @@ const resolvedPublishableKey =
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default clerkMiddleware(async (auth, request) => {
+  // Never run Clerk auth logic on the Clerk proxy route itself — doing so
+  // causes a recursive dev-browser handshake where the redirect_url becomes
+  // the proxy endpoint, which Clerk rejects as invalid.
+  if (request.nextUrl.pathname.startsWith("/api/clerk")) {
+    return NextResponse.next();
+  }
+
   // Fail open if Clerk keys are missing (prevents full 404 on misconfigured deployments)
   if (!resolvedPublishableKey) {
     return NextResponse.next();
@@ -28,12 +35,7 @@ export default clerkMiddleware(async (auth, request) => {
 
 export const config = {
   matcher: [
-    // Exclude _next, static files, AND the Clerk proxy route (/api/clerk/…)
-    // Clerk middleware must NOT run on the proxy route — otherwise it initiates
-    // a dev-browser handshake whose redirect_url is the proxy endpoint itself,
-    // producing the recursive "redirect_url is invalid" Clerk error.
-    "/((?!_next|api/clerk|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/api/(?!clerk)(.*)",
-    "/trpc/(.*)",
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
   ],
 };
