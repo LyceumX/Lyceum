@@ -4,7 +4,7 @@
 function getFrontendApiCandidates() {
   const explicit = process.env.CLERK_FRONTEND_API_URL?.trim();
   const testFallback = "https://up-hawk-3.clerk.accounts.dev";
-  const liveFallback = "https://enjoyed-gull-16.clerk.accounts.dev";
+  const liveFallback = "https://clerk.lyceum.us.ci";
   const resolvedPublishableKey =
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_TEST ||
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_LIVE ||
