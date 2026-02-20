@@ -28,7 +28,12 @@ export default clerkMiddleware(async (auth, request) => {
 
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
+    // Exclude _next, static files, AND the Clerk proxy route (/api/clerk/…)
+    // Clerk middleware must NOT run on the proxy route — otherwise it initiates
+    // a dev-browser handshake whose redirect_url is the proxy endpoint itself,
+    // producing the recursive "redirect_url is invalid" Clerk error.
+    "/((?!_next|api/clerk|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/api/(?!clerk)(.*)",
+    "/trpc/(.*)",
   ],
 };
