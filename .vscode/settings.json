@@ -6,6 +6,7 @@
         "git add": true,
         "dashboard": true,
         "/book-summary/page.tsx": true,
-        "base64": true
+        "base64": true,
+        "gh": true
     }
 }

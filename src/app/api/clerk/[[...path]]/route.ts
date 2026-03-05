@@ -1,22 +1,9 @@
-// Clerk proxy route — required when running on *.vercel.app (no DNS control)
-// Forwards requests to the Clerk Frontend API on behalf of the app
-
+// Clerk proxy route — forwards requests to the Clerk Frontend API
 function getFrontendApiCandidates() {
   const explicit = process.env.CLERK_FRONTEND_API_URL?.trim();
-  const testFallback = "https://up-hawk-3.clerk.accounts.dev";
-  const liveFallback = "https://clerk.lyceum.us.ci";
-  const resolvedPublishableKey =
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_TEST ||
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_LIVE ||
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  const isTestMode = resolvedPublishableKey?.startsWith("pk_test_");
+  const defaultFrontendApi = "https://clerk.lyceum.us.ci";
 
-  // Prioritize test fallback if test key is present
-  const fallbacks = isTestMode
-    ? [testFallback, liveFallback]
-    : [liveFallback, testFallback];
-
-  return [...fallbacks, explicit].filter(
+  return [explicit ?? defaultFrontendApi].filter(
     (value, index, array): value is string =>
       Boolean(value) && array.indexOf(value) === index,
   );

@@ -7,10 +7,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/clerk(.*)",
 ]);
 
-const resolvedPublishableKey =
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_TEST ||
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_LIVE ||
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const resolvedPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // Build the Clerk middleware separately so we can gate it below.
 const _clerkMiddleware = clerkMiddleware(async (auth, request) => {
@@ -22,7 +19,7 @@ const _clerkMiddleware = clerkMiddleware(async (auth, request) => {
     await auth.protect();
   }
 }, {
-  secretKey: process.env.CLERK_SECRET_KEY_TEST || process.env.CLERK_SECRET_KEY_LIVE || process.env.CLERK_SECRET_KEY,
+  secretKey: process.env.CLERK_SECRET_KEY,
   signInUrl: '/sign-in',
   signUpUrl: '/sign-up',
 });
